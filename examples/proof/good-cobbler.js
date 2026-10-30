@@ -1,0 +1,16 @@
+good_at('joe', 'cobbler')
+good_at('jane', 'carpenter')
+classified_as('joe', 'cobbler')
+classified_as('jane', 'carpenter')
+
+clause(1, fact(description('joe', ['good', 'cobbler'])))
+clause(2, fact(description('jane', ['good', 'carpenter'])))
+clause(4, implies(description(Person, ['good', Trade]), good_at(Person, Trade)))
+clause(5, implies(description(Person, ['good', Trade]), classified_as(Person, Trade)))
+
+step(good_at('joe', 'cobbler'), clause(4), {Person: 'joe', Trade: 'cobbler'}, [description('joe', ['good', 'cobbler'])])
+step(description('joe', ['good', 'cobbler']), clause(1), {}, [])
+step(good_at('jane', 'carpenter'), clause(4), {Person: 'jane', Trade: 'carpenter'}, [description('jane', ['good', 'carpenter'])])
+step(description('jane', ['good', 'carpenter']), clause(2), {}, [])
+step(classified_as('joe', 'cobbler'), clause(5), {Person: 'joe', Trade: 'cobbler'}, [description('joe', ['good', 'cobbler'])])
+step(classified_as('jane', 'carpenter'), clause(5), {Person: 'jane', Trade: 'carpenter'}, [description('jane', ['good', 'carpenter'])])

@@ -1,0 +1,33 @@
+// Half-open intervals [Start, End), measured in integer minutes.
+
+fact(interval('a', 600, 720))
+fact(interval('b', 780, 900))
+fact(interval('c', 720, 840))
+fact(interval('d', 660, 780))
+fact(interval('e', 600, 720))
+fact(interval('f', 600, 660))
+fact(interval('g', 660, 720))
+fact(interval('h', 540, 960))
+fact(start_duration('i', 960, 120))
+fact(end_duration('j', 960, 60))
+implies([start_duration(I, S, D), gt(D, 0), is(E, add(S, D))], interval(I, S, E))
+implies([end_duration(I, E, D), gt(D, 0), is(S, sub(E, D))], interval(I, S, E))
+implied_by(valid_interval(I, S, E), [interval(I, S, E), lt(S, E)])
+implied_by(pair(I, J, SI, EI, SJ, EJ), [valid_interval(I, SI, EI), valid_interval(J, SJ, EJ)])
+implies([pair(I, J, SI, EI, SJ, EJ), lt(EI, SJ)], relation(I, 'before', J))
+implies([pair(I, J, SI, EI, SJ, EJ), eq(EI, SJ)], relation(I, 'meets', J))
+implies(
+  [pair(I, J, SI, EI, SJ, EJ), lt(SI, SJ), lt(SJ, EI), lt(EI, EJ)],
+  relation(I, 'overlaps', J),
+)
+implies([pair(I, J, SI, EI, SJ, EJ), eq(SI, SJ), lt(EI, EJ)], relation(I, 'starts', J))
+implies([pair(I, J, SI, EI, SJ, EJ), lt(SJ, SI), lt(EI, EJ)], relation(I, 'during', J))
+implies([pair(I, J, SI, EI, SJ, EJ), lt(SJ, SI), eq(EI, EJ)], relation(I, 'finishes', J))
+implies([pair(I, J, SI, EI, SJ, EJ), eq(SI, SJ), eq(EI, EJ)], relation(I, 'equals', J))
+implies(relation(I, 'before', J), relation(J, 'after', I))
+implies(relation(I, 'meets', J), relation(J, 'met_by', I))
+implies(relation(I, 'overlaps', J), relation(J, 'overlapped_by', I))
+implies(relation(I, 'starts', J), relation(J, 'started_by', I))
+implies(relation(I, 'during', J), relation(J, 'contains', I))
+implies(relation(I, 'finishes', J), relation(J, 'finished_by', I))
+query(relation(I, Relation, J))

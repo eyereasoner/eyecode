@@ -1,0 +1,15 @@
+invoice(28)
+
+clause(5, fact(sum([], 0)))
+clause(6, implied_by(sum([X, ...Xs], Total), [sum(Xs, Rest), is(Total, add(X, Rest))]))
+clause(7, implies([findall(Amount, line_total(_0, Amount), Amounts), sum(Amounts, Total)], invoice(Total)))
+
+step(invoice(28), clause(7), {Amount: A, _0: B, Amounts: [6, 12, 10], Total: 28}, [findall(A, line_total(B, A), [6, 12, 10]), sum([6, 12, 10], 28)])
+step(findall(A, line_total(B, A), [6, 12, 10]), 'collected', {}, [])
+step(sum([6, 12, 10], 28), clause(6), {X: 6, Xs: [12, 10], Total: 28, Rest: 22}, [sum([12, 10], 22), is(28, add(6, 22))])
+step(sum([12, 10], 22), clause(6), {X: 12, Xs: [10], Total: 22, Rest: 10}, [sum([10], 10), is(22, add(12, 10))])
+step(sum([10], 10), clause(6), {X: 10, Xs: [], Total: 10, Rest: 0}, [sum([], 0), is(10, add(10, 0))])
+step(sum([], 0), clause(5), {}, [])
+step(is(10, add(10, 0)), 'builtin', {}, [])
+step(is(22, add(12, 10)), 'builtin', {}, [])
+step(is(28, add(6, 22)), 'builtin', {}, [])

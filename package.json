@@ -1,0 +1,41 @@
+{
+  "name": "eyelit",
+  "version": "0.1.0",
+  "description": "A dependency-free JavaScript rule language with forward and backward reasoning and checkable proofs.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "eyelit": "bin/eyelit.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "SPEC.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "reasoner",
+    "rules",
+    "logic",
+    "proof",
+    "datalog"
+  ],
+  "author": "Jos De Roo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eyereasoner/eyelit.git"
+  },
+  "homepage": "https://eyereasoner.github.io/eyelit/"
+}

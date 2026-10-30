@@ -1,0 +1,78 @@
+// One language for everything. This program states an energy grant policy,
+// has eyelit prove the policy's decisions, and then reads that proof and its
+// check report back as ordinary facts, in the same language, to answer audit
+// questions about the reasoning itself: which data each decision rests on,
+// which assumptions it takes on trust, and which decisions are at risk if
+// self-declared data is wrong. There is no export format, no schema and no
+// second tool: rules, data, conclusions, proofs and reports are all terms.
+
+// The applications, as JavaScript data: name, monthly income, household size
+// and the evidence for the income. JavaScript computes clauses from them;
+// once stated, a clause is a term.
+const APPLICATIONS = [
+  ['ann', 2100, 4, 'payslip'],
+  ['bob', 2900, 2, 'payslip'],
+  ['cara', 1800, 1, 'self_declared'],
+  ['dan', 2400, 3, 'self_declared'],
+  ['eve', 2000, 2, 'payslip'],
+]
+
+// The grant policy, stated as a program of its own.
+function policy() {
+  for (const [name, money, size] of APPLICATIONS) {
+    fact(applicant(name), income(name, money), household(name, size))
+  }
+  fact(already_received('eve'))
+  implies([applicant(P), income(P, I), lt(I, 2500), not(already_received(P))], grant(P))
+  implies([grant(P), household(P, N), ge(N, 3)], top_up(P))
+  implies([applicant(P), income(P, I), ge(I, 2500)], refused(P, 'income above 2500'))
+}
+
+// Prove the policy's decisions; eyelit.run() checks the proof before
+// returning it.
+const decided = eyelit.run(eyelit.build(policy), { proof: true })
+
+// The check report and the proof are documents in the language of this very
+// program, so they become facts here without any translation: the report as
+// it is, and each step of the proof as step_of(Goal, Justification, Uses).
+facts_from({ text: eyelit.checkReport(decided.proofReport) })
+for (const [term] of eyelit.readTerms(decided.proof)) {
+  if (term.name === 'step') {
+    const [goal, by, , uses] = term.args
+    fact(step_of(goal, by, uses))
+  } else if (term.name !== 'clause') {
+    fact(decision(term))
+  }
+}
+
+// Where each income figure came from.
+for (const [name, money, , evidence] of APPLICATIONS) {
+  fact(evidence_of(income(name, money), evidence))
+}
+
+fact(member(X, [X, ..._]))
+implied_by(member(X, [_, ...T]), member(X, T))
+
+// A goal depends on the goals its step used, and on everything they used.
+implies([step_of(G, By, Uses), member(U, Uses)], depends(G, U))
+implies([depends(G, U), depends(U, W)], depends(G, W))
+
+// The data a decision rests on are the policy's facts in its support: the
+// steps justified by a clause that used nothing. Its assumptions are the
+// absences the proof could only take on trust.
+implies([decision(D), depends(D, F), step_of(F, clause(_), [])], rests_on(D, F))
+implies([decision(D), depends(D, A), step_of(A, 'absent', [])], assumes(D, A))
+
+// Was the policy's own reasoning certified, and on what conditions?
+query(verdict(V))
+
+// A decision is at risk when it rests on an income nobody has verified.
+implies([rests_on(D, F), evidence_of(F, 'self_declared')], at_risk(D, F))
+query(at_risk(D, F))
+
+// For each decision: the data it rests on and the assumptions it makes.
+implies(
+  [decision(D), findall(F, rests_on(D, F), Data), findall(A, assumes(D, A), Assumptions)],
+  explanation(D, Data, Assumptions),
+)
+query(explanation(D, Data, Assumptions))

@@ -1,0 +1,12 @@
+// base/3 represents immutable external data. t/3 is the union view.
+
+fact(base('alice', 'parent_of', 'bob'))
+fact(base('alice', 'parent_of', 'carol'))
+fact(base('bob', 'blocked', 'true'))
+implied_by(t(S, P, O), base(S, P, O))
+implies(t(P, 'parent_of', C), t(C, 'child_of', P))
+implies([t(C, 'child_of', 'alice'), not(t(C, 'blocked', 'true'))], allowed(C))
+implies(
+  [base(P, 'parent_of', _), findall(C, t(C, 'child_of', P), Children)],
+  children(P, Children),
+)

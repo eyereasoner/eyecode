@@ -1,0 +1,16 @@
+// Move three disks using a spare peg; recursion constructs the move list.
+
+fact(append([], Ys, Ys))
+implied_by(append([X, ...Xs], Ys, [X, ...Zs]), append(Xs, Ys, Zs))
+fact(moves(1, From, To, _, [move(From, To)]))
+implied_by(
+  moves(N, From, To, Spare, Moves),
+  [
+    gt(N, 1),
+    is(Smaller, sub(N, 1)),
+    moves(Smaller, From, Spare, To, First),
+    moves(Smaller, Spare, To, From, Last),
+    append(First, [move(From, To), ...Last], Moves),
+  ],
+)
+query(moves(3, 'left', 'right', 'center', Moves))

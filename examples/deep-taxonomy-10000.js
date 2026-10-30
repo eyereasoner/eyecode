@@ -1,0 +1,13 @@
+// Deep taxonomy: one individual, and a chain of 10000 levels in which every level
+// also branches into two siblings that lead nowhere. Reaching n10000 means
+// following the single productive branch the whole way down. A loop states
+// the three rules of every level.
+// See https://web.archive.org/web/20101025233525/http://www.ruleml.org/WellnessRules/files/WellnessRulesN3-2009-11-10.pdf
+
+fact(type('ind', 'n0'))
+for (let level = 1; level <= 10000; level++) {
+  implied_by(type(X, `n${level}`), type(X, `n${level - 1}`))
+  implied_by(type(X, `i${level}`), type(X, `n${level - 1}`))
+  implied_by(type(X, `j${level}`), type(X, `n${level - 1}`))
+}
+query(type(X, 'n10000'))

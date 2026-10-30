@@ -1,0 +1,15 @@
+has_record('alice', record('person_rule', 'alice'))
+record_owner(record('person_rule', 'alice'), 'alice')
+has_record('bob', record('person_rule', 'bob'))
+record_owner(record('person_rule', 'bob'), 'bob')
+
+clause(1, fact(person('alice')))
+clause(2, fact(person('bob')))
+clause(3, implies(person(Name), [has_record(Name, record('person_rule', Name)), record_owner(record('person_rule', Name), Name)]))
+
+step(has_record('alice', record('person_rule', 'alice')), clause(3), {Name: 'alice'}, [person('alice')])
+step(person('alice'), clause(1), {}, [])
+step(record_owner(record('person_rule', 'alice'), 'alice'), clause(3), {Name: 'alice'}, [person('alice')])
+step(has_record('bob', record('person_rule', 'bob')), clause(3), {Name: 'bob'}, [person('bob')])
+step(person('bob'), clause(2), {}, [])
+step(record_owner(record('person_rule', 'bob'), 'bob'), clause(3), {Name: 'bob'}, [person('bob')])
